@@ -112,9 +112,11 @@ export function createWebServer({ harness, context, getSnapshot, createConversat
         res.writeHead(404);
         return res.end("conversation not found");
       }
-      await conv.submit({ type: "input", content: String(body.content ?? "") }, context);
+      const sub = await conv.submit({ type: "input", content: String(body.content ?? "") }, context);
+      // 唤醒 scheduler（不 await，后台跑）
+      sub.wait(context).catch(() => {});
       res.writeHead(200, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ ok: true }));
+      return res.end(JSON.stringify({ ok: true, submissionId: String(sub.id) }));
     }
 
     // 新建会话
