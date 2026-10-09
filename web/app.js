@@ -55,14 +55,30 @@ function renderConversationTree() {
 
 // ─── 转录（entries）────────────────────────────────────────────────────────
 function messageText(msg) {
-  if (!msg || !msg.content) return "";
-  return msg.content
-    .map((c) => {
-      if (c.type === "text") return c.text;
-      if (c.type === "toolCall") return `🛠 ${c.name}(${JSON.stringify(c.arguments ?? {})})`;
-      return `[${c.type}]`;
-    })
-    .join("\n");
+  if (!msg) return "";
+  if (msg.errorMessage) return `❌ ${msg.errorMessage}`;
+  const c = msg.content;
+  // user message 的 content 是字符串
+  if (typeof c === "string") return c;
+  if (c === undefined || c === null || (Array.isArray(c) && c.length === 0)) {
+    if (msg.stopReason && !["endTurn", "stop", "toolUse"].includes(msg.stopReason)) {
+      return `[${msg.stopReason}]`;
+    }
+    return "";
+  }
+  if (Array.isArray(c)) {
+    return c
+      .map((part) => {
+        if (part == null) return "";
+        if (part.type === "text") return part.text ?? "";
+        if (part.type === "thinking") return `[thinking] ${part.thinking ?? ""}`.slice(0, 500);
+        if (part.type === "toolCall") return `🛠 ${part.name}(${JSON.stringify(part.arguments ?? {})})`;
+        if (part.type === "toolResult") return `[result] ${JSON.stringify(part.content ?? part).slice(0, 500)}`;
+        return `[${part.type}]`;
+      })
+      .join("\n");
+  }
+  return String(c);
 }
 
 function renderEntries() {
