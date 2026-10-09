@@ -65,7 +65,10 @@ export function createWebServer({ harness, context, getSnapshot, createConversat
       try {
         const file = join(webDir, pathname === "/" ? "index.html" : pathname);
         const body = await readFile(file);
-        res.writeHead(200, { "Content-Type": MIME[file.slice(file.lastIndexOf("."))] ?? "application/octet-stream" });
+        res.writeHead(200, {
+          "Content-Type": MIME[file.slice(file.lastIndexOf("."))] ?? "application/octet-stream",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        });
         return res.end(body);
       } catch {
         res.writeHead(404);
