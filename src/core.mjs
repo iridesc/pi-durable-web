@@ -124,10 +124,11 @@ export function createWebServer({ harness, context, getSnapshot, createConversat
       return res.end(JSON.stringify({ id: String(conv.id) }));
     }
 
-    // 额外路由
+    // 额外路由（支持单 method 或方法列表）
     const extra = extraRoutes[pathname];
-    if (extra !== undefined && extra.method === req.method) {
-      return extra.handler(req, res);
+    if (extra !== undefined) {
+      const methods = Array.isArray(extra.methods) ? extra.methods : [extra.method];
+      if (methods.includes(req.method)) return extra.handler(req, res);
     }
 
     res.writeHead(404);
