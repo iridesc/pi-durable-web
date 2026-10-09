@@ -41,7 +41,10 @@ function renderConversationTree() {
     div.textContent = `#${n.id} · ${n.entries.length} entries`;
     const tag = document.createElement("span");
     tag.className = "conv-tag";
-    tag.textContent = n.owner ? `owned (task #${n.owner.taskId})` : "top-level";
+    const parts = [];
+    if (n.project) parts.push(`📁 ${n.project}`);
+    parts.push(n.owner ? `owned (task #${n.owner.taskId})` : "top-level");
+    tag.textContent = parts.join(" · ");
     div.appendChild(tag);
     div.onclick = () => { selectedId = n.id; render(); };
     el.appendChild(div);
