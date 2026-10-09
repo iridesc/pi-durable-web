@@ -1,0 +1,15 @@
+{
+  "name": "pi-durable-web",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Raw presentation of Pi Durable core concepts: conversation / task / ownership / checkpoint",
+  "scripts": {
+    "start": "node src/server.mjs"
+  },
+  "dependencies": {
+    "@earendil-works/chord": "1.1.0",
+    "@earendil-works/pi-ai": "1.1.0",
+    "@earendil-works/pi-durable": "1.1.0"
+  }
+}
