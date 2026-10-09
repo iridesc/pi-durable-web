@@ -7,7 +7,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const webDir = join(dirname(fileURLToPath(import.meta.url)), "..", "web");
+const defaultWebDir = join(dirname(fileURLToPath(import.meta.url)), "..", "web");
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css" };
 
 /** 枚举所有 conversation + 各自的转录（entries）+ 任务图（live）。 */
@@ -50,8 +50,9 @@ function readBody(req) {
  * @param {() => Promise<object>} opts.getSnapshot    完整快照（可在 snapshot() 基础上加自有字段）
  * @param {() => Promise<object>} [opts.createConversation] 新建会话；默认 ownerless、不覆盖 agent
  * @param {Record<string, {method: string, handler: (req,res)=>Promise<void>}>} [opts.extraRoutes] 额外 API
+ * @param {string} [opts.webDir]             静态页面目录；默认 pi-durable-web 自带 web/
  */
-export function createWebServer({ harness, context, getSnapshot, createConversation, extraRoutes = {} }) {
+export function createWebServer({ harness, context, getSnapshot, createConversation, extraRoutes = {}, webDir = defaultWebDir }) {
   const newConversation =
     createConversation ?? (() => harness.createConversation({ ownership: { kind: "ownerless" } }, context));
 
